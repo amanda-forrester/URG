@@ -34,7 +34,7 @@ try {
 
     // Fetch average time parts stay in inventory before being sold
     $stmt = $pdo->query("
-        SELECT AVG(EXTRACT(day FROM AGE(r.request_date, p.date_added))) as avg_days_in_inventory 
+        SELECT ROUND(AVG(EXTRACT(day FROM AGE(r.request_date, p.date_added))), 2) as avg_days_in_inventory 
         FROM requests r
         JOIN parts p ON r.part_id = p.id
         WHERE r.fulfilled = true");
