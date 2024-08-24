@@ -47,14 +47,6 @@
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title">Fulfilled Requests</h5>
-                        <p class="card-text" id="fulfilled-requests">Loading...</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
                         <h5 class="card-title">Average Days in Inventory</h5>
                         <p class="card-text" id="avg-days-in-inventory">Loading...</p>
                     </div>
@@ -83,13 +75,23 @@
     </div>
 
     <script>
+        // Function to generate a set of distinct colors
+        function generateColors(numColors) {
+            const colors = [];
+            const step = 360 / numColors;
+            for (let i = 0; i < numColors; i++) {
+                const hue = i * step;
+                colors.push(`hsl(${hue}, 70%, 70%)`);
+            }
+            return colors;
+        }
+
         fetch('/api/insights')
             .then(response => response.json())
             .then(data => {
                 document.getElementById('total-parts').textContent = data.total_parts;
                 document.getElementById('available-parts').textContent = data.available_parts;
                 document.getElementById('sold-parts').textContent = data.sold_parts;
-                document.getElementById('fulfilled-requests').textContent = data.fulfilled_requests;
                 document.getElementById('avg-days-in-inventory').textContent = data.avg_days_in_inventory;
 
                 const recycledPartsCtx = document.getElementById('recycled-parts-chart').getContext('2d');
@@ -102,7 +104,7 @@
                         datasets: [{
                             label: 'Recycled Count',
                             data: data.most_recycled_parts.map(part => part.recycled_count),
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            backgroundColor: 'rgba(144, 228, 193)',
                             borderColor: 'rgba(75, 192, 192, 1)',
                             borderWidth: 1
                         }]
@@ -116,6 +118,10 @@
                     }
                 });
 
+                // Generate colors dynamically based on number of segments
+                const numPartsByMake = data.parts_by_make.length;
+                const colors = generateColors(numPartsByMake);
+
                 new Chart(partsByMakeCtx, {
                     type: 'pie',
                     data: {
@@ -123,8 +129,8 @@
                         datasets: [{
                             label: 'Parts Count',
                             data: data.parts_by_make.map(make => make.count),
-                            backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)', 'rgba(255, 206, 86, 0.2)', 'rgba(75, 192, 192, 0.2)', 'rgba(153, 102, 255, 0.2)', 'rgba(255, 159, 64, 0.2)'],
-                            borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)', 'rgba(255, 206, 86, 1)', 'rgba(75, 192, 192, 1)', 'rgba(153, 102, 255, 1)', 'rgba(255, 159, 64, 1)'],
+                            backgroundColor: colors,
+                            borderColor: colors.map(color => color.replace('0.2', '1')),
                             borderWidth: 1
                         }]
                     },
@@ -149,3 +155,4 @@
     </script>
 </body>
 </html>
+
