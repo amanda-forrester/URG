@@ -1,0 +1,12 @@
+{
+    "name": "amand/urg",
+    "authors": [
+        {
+            "name": "Amanda Forrester",
+            "email": "amanda.forrester1@gmail.com"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.4"
+    }
+}
