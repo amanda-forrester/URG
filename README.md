@@ -22,3 +22,11 @@ The Inventory Insight Dashboard provides real-time insights into inventory data,
 - **Bootstrap**: For responsive layout and styling.
 
 
+## Preview
+
+
+
+![Inventory_Screenshot1](https://github.com/user-attachments/assets/085ce3b5-95a7-4ffb-89fe-cb8469a34784)
+
+
+![Inventory_Screenshot2](https://github.com/user-attachments/assets/faae87d0-1540-4491-94a3-fbaeec178274)
