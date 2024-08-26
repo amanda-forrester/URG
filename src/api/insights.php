@@ -6,6 +6,10 @@ header('Content-Type: application/json');
 try {
     $pdo = getDbConnection();
 
+    if (!$pdo) {
+        throw new Exception('Failed to connect to the database.');
+    }
+
     // Fetch total parts
     $stmt = $pdo->query("SELECT COUNT(*) as total_parts FROM parts");
     $totalParts = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -48,7 +52,12 @@ try {
     ");
     $partsByMake = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Print out insights data
+    // Calculate environmental impact
+    $co2Saved = ($soldParts['sold_parts'] ?? 0) * 50; // Assuming 50 kg CO2 saved per part
+    $landfillSaved = ($soldParts['sold_parts'] ?? 0) * 0.01; // Assuming 0.01 cubic meters saved per part
+    $energySaved = ($soldParts['sold_parts'] ?? 0) * 100; // Assuming 100 kWh saved per part
+
+    // Prepare insights data
     $insights = [
         'total_parts' => $totalParts['total_parts'] ?? 0,
         'available_parts' => $availableParts['available_parts'] ?? 0,
@@ -57,16 +66,17 @@ try {
         'most_recycled_parts' => $mostRecycledParts,
         'avg_days_in_inventory' => $avgDaysInInventory['avg_days_in_inventory'] ?? 0,
         'parts_by_make' => $partsByMake,
+        'co2_saved' => $co2Saved,
+        'landfill_saved' => $landfillSaved,
+        'energy_saved' => $energySaved,
     ];
 
     echo json_encode($insights);
 
 } catch (PDOException $e) {
-    echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    error_log('Database error: ' . $e->getMessage());
+    echo json_encode(['error' => 'Database error occurred.']);
 } catch (Exception $e) {
-    echo json_encode(['error' => 'An unexpected error occurred: ' . $e->getMessage()]);
+    error_log('Unexpected error: ' . $e->getMessage());
+    echo json_encode(['error' => 'An unexpected error occurred.']);
 }
-
-
-
-

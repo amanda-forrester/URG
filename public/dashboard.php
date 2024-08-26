@@ -3,78 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Insights Dashboard</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <title>Inventory Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="container mt-4">
-        <header>
-            <h1 class="text-center">Insights Dashboard</h1>
-        </header>
-
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total Parts</h5>
-                        <p class="card-text" id="total-parts">Loading...</p>
-                    </div>
-                </div>
+    <div class="container my-4">
+        <h1 class="mb-4 text-center">Inventory Dashboard</h1>
+        
+        <!-- Environmental Metrics -->
+        <div class="row text-center mb-4">
+            <div class="col-md-4">
+                <img src="/assets/images/leaf-icon.png" alt="CO2 Saved" style="width: 50px;">
+                <h2 id="co2-saved">Loading...</h2>
+                <p>CO2 Saved (tons)</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Available Parts</h5>
-                        <p class="card-text" id="available-parts">Loading...</p>
-                    </div>
-                </div>
+            <div class="col-md-4">
+                <img src="/assets/images/recycle-icon.png" alt="Landfill Space Saved" style="width: 50px;">
+                <h2 id="landfill-saved">Loading...</h2>
+                <p>Landfill Space Saved (m³)</p>
             </div>
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Sold Parts</h5>
-                        <p class="card-text" id="sold-parts">Loading...</p>
-                    </div>
-                </div>
+            <div class="col-md-4">
+                <img src="/assets/images/lightbulb-icon.png" alt="Energy Saved" style="width: 50px;">
+                <h2 id="energy-saved">Loading...</h2>
+                <p>Energy Saved (MWh)</p>
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Average Days in Inventory</h5>
-                        <p class="card-text" id="avg-days-in-inventory">Loading...</p>
-                    </div>
-                </div>
+        <!-- Inventory Metrics -->
+        <div class="row text-center mb-4">
+            <div class="col-md-3">
+                <h2 id="total-parts">Loading...</h2>
+                <p>Total Parts</p>
             </div>
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Most Recycled Parts</h5>
-                        <canvas id="recycled-parts-chart"></canvas>
-                    </div>
-                </div>
+            <div class="col-md-3">
+                <h2 id="available-parts">Loading...</h2>
+                <p>Available Parts</p>
+            </div>
+            <div class="col-md-3">
+                <h2 id="sold-parts">Loading...</h2>
+                <p>Sold Parts</p>
+            </div>
+            <div class="col-md-3">
+                <h2 id="avg-days-in-inventory">Loading...</h2>
+                <p>Average Days in Inventory</p>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-12 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title">Parts by Vehicle Make</h5>
-                        <canvas id="parts-by-make-chart"></canvas>
-                    </div>
-                </div>
+        
+        <!-- Charts -->
+        <div class="row mt-4">
+            <div class="col-md-6 mb-4">
+                <h4 class="text-center">Most Recycled Parts</h4>
+                <canvas id="recycled-parts-chart"></canvas>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h4 class="text-center">Parts by Vehicle Make</h4>
+                <canvas id="parts-by-make-chart"></canvas>
             </div>
         </div>
     </div>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('/api/insights')
+                .then(response => response.json())
+                .then(data => {
+                    // Debugging logs to check element presence
+                    console.log('Data fetched:', data);
+                    
+                    // Ensure the elements exist before setting their content
+                    if (document.getElementById('total-parts')) {
+                        document.getElementById('total-parts').textContent = data.total_parts || 'N/A';
+                    }
+                    if (document.getElementById('available-parts')) {
+                        document.getElementById('available-parts').textContent = data.available_parts || 'N/A';
+                    }
+                    if (document.getElementById('sold-parts')) {
+                        document.getElementById('sold-parts').textContent = data.sold_parts || 'N/A';
+                    }
+                    if (document.getElementById('avg-days-in-inventory')) {
+                        document.getElementById('avg-days-in-inventory').textContent = data.avg_days_in_inventory || 'N/A';
+                    }
+
+                    if (document.getElementById('co2-saved')) {
+                        document.getElementById('co2-saved').textContent = data.co2_saved || 'N/A';
+                    }
+                    if (document.getElementById('landfill-saved')) {
+                        document.getElementById('landfill-saved').textContent = data.landfill_saved || 'N/A';
+                    }
+                    if (document.getElementById('energy-saved')) {
+                        document.getElementById('energy-saved').textContent = data.energy_saved || 'N/A';
+                    }
+
+                    // Chart for most recycled parts
+                    const recycledPartsCtx = document.getElementById('recycled-parts-chart').getContext('2d');
+                    new Chart(recycledPartsCtx, {
+                        type: 'bar',
+                        data: {
+                            labels: data.most_recycled_parts.map(part => part.part_name),
+                            datasets: [{
+                                label: 'Recycled Count',
+                                data: data.most_recycled_parts.map(part => part.recycled_count),
+                                backgroundColor: 'rgba(144, 228, 193)',  // Light teal color for all bars
+                                borderColor: 'rgba(75, 192, 192, 1)',  // Teal border
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+
+                    // Chart for parts by vehicle make
+                    const partsByMakeCtx = document.getElementById('parts-by-make-chart').getContext('2d');
+                    const numPartsByMake = data.parts_by_make.length;
+                    const partsByMakeColors = generateColors(numPartsByMake);
+                    new Chart(partsByMakeCtx, {
+                        type: 'pie',
+                        data: {
+                            labels: data.parts_by_make.map(make => make.vehicle_make),
+                            datasets: [{
+                                label: 'Parts Count',
+                                data: data.parts_by_make.map(make => make.count),
+                                backgroundColor: partsByMakeColors,
+                                borderColor: partsByMakeColors.map(color => color.replace('0.2', '1')),
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                        }
+                    });
+                })
+                .catch(error => console.error('Error fetching insights data:', error));
+        });
+
         // Function to generate a set of distinct colors
         function generateColors(numColors) {
             const colors = [];
@@ -85,74 +152,10 @@
             }
             return colors;
         }
-
-        fetch('/api/insights')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('total-parts').textContent = data.total_parts;
-                document.getElementById('available-parts').textContent = data.available_parts;
-                document.getElementById('sold-parts').textContent = data.sold_parts;
-                document.getElementById('avg-days-in-inventory').textContent = data.avg_days_in_inventory;
-
-                const recycledPartsCtx = document.getElementById('recycled-parts-chart').getContext('2d');
-                const partsByMakeCtx = document.getElementById('parts-by-make-chart').getContext('2d');
-
-                new Chart(recycledPartsCtx, {
-                    type: 'bar',
-                    data: {
-                        labels: data.most_recycled_parts.map(part => part.part_name),
-                        datasets: [{
-                            label: 'Recycled Count',
-                            data: data.most_recycled_parts.map(part => part.recycled_count),
-                            backgroundColor: 'rgba(144, 228, 193)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            y: {
-                                beginAtZero: true
-                            }
-                        }
-                    }
-                });
-
-                // Generate colors dynamically based on number of segments
-                const numPartsByMake = data.parts_by_make.length;
-                const colors = generateColors(numPartsByMake);
-
-                new Chart(partsByMakeCtx, {
-                    type: 'pie',
-                    data: {
-                        labels: data.parts_by_make.map(make => make.vehicle_make),
-                        datasets: [{
-                            label: 'Parts Count',
-                            data: data.parts_by_make.map(make => make.count),
-                            backgroundColor: colors,
-                            borderColor: colors.map(color => color.replace('0.2', '1')),
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'top',
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(tooltipItem) {
-                                        return tooltipItem.label + ': ' + tooltipItem.raw;
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            })
-            .catch(error => console.error('Error fetching insights data:', error));
     </script>
 </body>
 </html>
+
+
+
 
